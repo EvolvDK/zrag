@@ -1,3 +1,8 @@
+AGENTS.md
+.pi*
+**/__pycache__*
+zvec_rag_demo*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
