@@ -86,7 +86,7 @@ class TestCollectionCLI:
         }
         mock = _make_daemon_client_mock({("POST", "/collections"): mock_response})
         with patch("zrag.cli.ensure_daemon", return_value=mock):
-            result = runner.invoke(cli, ["collection", "add", str(repo)])
+            result = runner.invoke(cli, ["collection", "add", "myrepo", str(repo)])
         assert result.exit_code == 0
         assert "myrepo" in result.output
 
@@ -96,9 +96,17 @@ class TestCollectionCLI:
         mock_response = {"name": "custom", "path": str(repo), "document_count": 0, "size_bytes": 0}
         mock = _make_daemon_client_mock({("POST", "/collections"): mock_response})
         with patch("zrag.cli.ensure_daemon", return_value=mock):
-            result = runner.invoke(cli, ["collection", "add", str(repo), "--name", "custom"])
+            result = runner.invoke(cli, ["collection", "add", "custom", str(repo)])
         assert result.exit_code == 0
         assert "custom" in result.output
+
+    def test_collection_add_empty(self, runner):
+        mock_response = {"name": "empty", "path": "/tmp/empty", "document_count": 0, "size_bytes": 0}
+        mock = _make_daemon_client_mock({("POST", "/collections"): mock_response})
+        with patch("zrag.cli.ensure_daemon", return_value=mock):
+            result = runner.invoke(cli, ["collection", "add", "empty"])
+        assert result.exit_code == 0
+        assert "empty" in result.output
 
     def test_collection_remove_with_force(self, runner):
         mock = _make_daemon_client_mock({("DELETE", "/collections/testcol"): {"message": "removed"}})

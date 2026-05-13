@@ -50,7 +50,7 @@ def create_mcp_server(host: str = "127.0.0.1", port: int = 8000) -> FastMCP:
 
     def _client():
         """Shortcut for MCP tools: fail fast (10s) if daemon isn't ready."""
-        return ensure_daemon(quiet=True, raise_errors=True, max_wait_seconds=60.0)
+        return ensure_daemon(quiet=True, raise_errors=True, max_wait_seconds=120.0)
 
     @mcp.tool()
     def search(query: str, collection: str = "default", top_k: int = 5, full_content: bool = False) -> str:

@@ -81,7 +81,7 @@ def check_daemon() -> bool:
         return False
 
 
-def ensure_daemon(quiet: bool = False, raise_errors: bool = False, max_wait_seconds: float = 60.0) -> DaemonClient:
+def ensure_daemon(quiet: bool = False, raise_errors: bool = False, max_wait_seconds: float = 120.0) -> DaemonClient:
     if not check_daemon():
         if not quiet:
             console.print("[yellow]Daemon is not running. Auto-starting...[/yellow]")
@@ -391,22 +391,26 @@ def collection():
     pass
 
 @collection.command("add")
-@click.argument("path", type=click.Path(exists=True))
-@click.option("--name", help="Collection name (default: directory name)")
+@click.argument("name")
+@click.argument("path", type=click.Path(exists=True), required=False)
 @click.option("--mask", help="File mask pattern (e.g., '**/*.md')")
 @click.option("--description", help="Collection description")
-def collection_add(path: str, name: Optional[str], mask: Optional[str], description: Optional[str]):
+def collection_add(name: str, path: Optional[str], mask: Optional[str], description: Optional[str]):
     with ensure_daemon() as client:
-        path_obj = Path(path)
-        collection_name = name or path_obj.name
-        console.print(f"[cyan]Creating collection '{collection_name}' from {path}...[/cyan]")
+        if path:
+            path_obj = Path(path)
+            console.print(f"[cyan]Creating collection '{name}' from {path}...[/cyan]")
+            source_path = str(path_obj.absolute())
+        else:
+            console.print(f"[cyan]Creating empty collection '{name}'...[/cyan]")
+            source_path = None
 
         result = client.post("/collections", json={
-            "name": collection_name, "description": description,
-            "mask": mask, "source_path": str(path_obj.absolute()),
+            "name": name, "description": description,
+            "mask": mask, "source_path": source_path,
         })
 
-        console.print(f"[green]✓ Collection '{collection_name}' created successfully[/green]")
+        console.print(f"[green]✓ Collection '{name}' created successfully[/green]")
         console.print(f"  Path: {result['path']}\n  Size: {result['size_bytes']} bytes")
 
 @collection.command("list")

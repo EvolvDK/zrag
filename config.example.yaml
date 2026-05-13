@@ -1,0 +1,121 @@
+# =============================================================================
+# zrag configuration
+# Place at ~/.zrag/config.yaml or generate with Config().save()
+# =============================================================================
+
+# --- Paths ---------------------------------------------------------------
+# Internal data directory (zvec database files, caches, logs)
+data_dir: ~/.zrag/data
+
+# Collection storage directory (one subdirectory per collection)
+collections_dir: ~/.zrag/collections
+
+
+# --- Daemon --------------------------------------------------------------
+# Bind address and port for the background daemon
+daemon_host: 127.0.0.1
+daemon_port: 8765
+
+# Idle timeout in seconds before the daemon auto-shuts down (300 = 5 minutes)
+daemon_timeout: 300
+
+
+# --- Chunking ------------------------------------------------------------
+# Target chunk size in tokens (using cl100k_base tokenizer)
+chunk_tokens: 900
+
+# Chunk overlap ratio (0.15 = 15%)
+chunk_overlap: 0.15
+
+
+# --- Search / Index ------------------------------------------------------
+# Default number of results to return
+top_k: 5
+
+# HNSW search parameter — higher = better recall, slightly slower
+hnsw_ef: 100
+
+# HNSW construction parameter — connections per node (16 is a good default)
+hnsw_m: 16
+
+# HNSW construction search depth (should be >= hnsw_ef)
+hnsw_ef_construction: 200
+
+
+# --- Dense Embedding -----------------------------------------------------
+# Backend: "local" | "openai" | "qwen" | "jina"
+dense_embedding_type: local
+
+# Provider-specific configuration (empty for "local", see comments for cloud providers)
+dense_embedding_config: {}
+  # For "local": no extra config needed (all-MiniLM-L6-v2, 384 dims)
+  #
+  # For "openai":
+  #   api_key: sk-...
+  #   model: text-embedding-3-small
+  #   dimension: 1536
+  #
+  # For "qwen" (DashScope):
+  #   api_key: sk-...
+  #   model: text-embedding-v3
+  #   dimension: 256
+  #
+  # For "jina":
+  #   api_key: jina_...
+  #   model: jina-embeddings-v3
+  #   dimension: 1024
+  #   task: retrieval.passage
+
+
+# --- Image Embedding -----------------------------------------------------
+# Backend: "clip" | "multimodal"
+image_embedding_type: clip
+
+image_embedding_config: {}
+  # For "clip": no extra config needed (ViT-B/32, 512 dims)
+  #
+  # For "multimodal":
+  #   model_path: /path/to/model
+  #   dimension: 768
+  #   torch_dtype: float16
+
+
+# --- Reranker ------------------------------------------------------------
+# Backend: "local" | "qwen" | "openai" | "none"
+reranker_type: local
+
+# Number of candidates to rerank after RRF fusion (higher = better recall, slower)
+rerank_candidates: 30
+
+# Also apply reranker to BM25-only searches
+use_reranker_for_bm25: false
+
+reranker_config: {}
+  # For "local": no extra config needed (ms-marco-MiniLM-L-6-v2 cross-encoder)
+  #
+  # For "qwen" (DashScope):
+  #   api_key: sk-...
+  #   model: gte-rerank
+  #
+  # For "openai":
+  #   api_key: sk-...
+  #   model: gpt-4o
+  #
+  # For "none": no reranking, pure RRF
+
+
+# --- Reciprocal Rank Fusion ----------------------------------------------
+# RRF constant — higher values reduce the influence of rank position.
+# 30 is typical; 60 gives tighter coupling.
+rrf_k: 30
+
+
+# --- Query Expansion -----------------------------------------------------
+# Enable HyDE (Hypothetical Document Embeddings) for query expansion
+use_hyde: true
+
+# API endpoint for the expansion LLM (e.g., llama.cpp server)
+query_expansion_api_url: http://localhost:8001/v1
+
+# Model name as known by the expansion endpoint
+query_expansion_model: qmd-query-expansion-1.7B-gguf

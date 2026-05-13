@@ -15,8 +15,10 @@ Local-first, high-performance RAG orchestration engine built on zvec. Provides s
 ## Installation
 
 ```bash
-uv pip install -e .
+uv tool install .
 ```
+
+This installs the `zrag` command globally, making it accessible from anywhere on your system.
 
 ## Quick Start
 
@@ -25,7 +27,10 @@ uv pip install -e .
 zrag daemon start
 
 # Create a collection from a directory
-zrag collection add ./src --name my-project
+zrag collection add my-project ./src
+
+# Create an empty collection
+zrag collection add my-collection
 
 # Search using hybrid retrieval
 zrag query "authentication middleware"
@@ -102,7 +107,10 @@ zrag status
 
 ```bash
 # Create collection from directory
-zrag collection add <path> --name <name> [--mask "**/*.py"] [--description "..."]
+zrag collection add <name> [<path>] [--mask "**/*.md"] [--description "..."]
+
+# Create empty collection (no path)
+zrag collection add <name>
 
 # List all collections
 zrag collection list
@@ -245,8 +253,8 @@ for result in results:
 ## Development
 
 ```bash
-# Install dependencies
-uv pip install -e ".[dev]"
+# Install in editable mode (for contributing)
+uv tool install -e ".[dev]"
 
 # Run tests
 pytest
